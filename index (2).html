@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI LagSwitch — Download</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --pink:       #ff2d78;
+    --pink-light: #ff6ea8;
+    --pink-glow:  #ff2d7855;
+    --black:      #080810;
+    --black2:     #0f0f1a;
+    --black3:     #161624;
+    --border:     #2a0f1e;
+    --text:       #f0d6e8;
+    --muted:      #7a5068;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black); color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh; overflow-x: hidden; cursor: crosshair;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,45,120,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,45,120,.04) 1px, transparent 1px);
+    background-size: 40px 40px; pointer-events: none; z-index: 0;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.15) 2px, rgba(0,0,0,.15) 4px);
+    pointer-events: none; z-index: 1;
+  }
+  .noise {
+    position: fixed; inset: 0; opacity: .03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 2;
+  }
+  .wrap { position: relative; z-index: 10; max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(8,8,16,.88); backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 860px; margin: 0 auto; padding: 0 24px;
+    height: 54px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: 'Orbitron', monospace; font-weight: 900; font-size: .95rem;
+    color: var(--pink); text-shadow: 0 0 16px var(--pink-glow);
+    letter-spacing: .15em; text-decoration: none;
+  }
+  .nav-gh {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--muted); text-decoration: none;
+    font-size: .72rem; letter-spacing: .1em; text-transform: uppercase;
+    transition: color .2s;
+  }
+  .nav-gh:hover { color: var(--pink-light); }
+
+  /* HERO */
+  .hero {
+    min-height: 88vh; display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center; padding: 80px 0 60px; position: relative; z-index: 10;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: 35%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 750px; height: 420px;
+    background: radial-gradient(ellipse, rgba(255,45,120,.2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--pink); color: var(--pink-light);
+    font-size: .68rem; letter-spacing: .15em; text-transform: uppercase;
+    padding: 5px 16px; border-radius: 2px; margin-bottom: 28px;
+    animation: fadeUp .6s ease both; box-shadow: 0 0 18px var(--pink-glow);
+  }
+  .hero-badge span {
+    display: inline-block; width: 6px; height: 6px;
+    background: var(--pink); border-radius: 50%;
+    animation: blink 1.2s step-start infinite;
+  }
+  .hero-title {
+    font-family: 'Orbitron', monospace; font-weight: 900;
+    font-size: clamp(3rem, 9vw, 6rem);
+    line-height: 1; letter-spacing: -.02em; color: #fff;
+    animation: fadeUp .7s .1s ease both;
+  }
+  .hero-title em {
+    font-style: normal; color: var(--pink);
+    text-shadow: 0 0 40px var(--pink-glow), 0 0 90px var(--pink-glow);
+  }
+  .hero-sub {
+    margin-top: 20px; color: var(--muted); font-size: .85rem;
+    line-height: 1.8; max-width: 460px;
+    animation: fadeUp .7s .2s ease both;
+  }
+
+  /* DOWNLOAD CARD */
+  .dl-wrap {
+    margin-top: 48px; width: 100%; max-width: 600px;
+    animation: fadeUp .7s .35s ease both;
+  }
+  .dl-card {
+    background: var(--black2); border: 1px solid var(--pink); border-radius: 3px;
+    padding: 32px 36px; display: flex; align-items: center;
+    justify-content: space-between; gap: 24px; flex-wrap: wrap;
+    position: relative; overflow: hidden;
+    box-shadow: 0 0 80px rgba(255,45,120,.1);
+  }
+  .dl-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at top right, rgba(255,45,120,.12), transparent 60%);
+    pointer-events: none;
+  }
+  .dl-info { flex: 1; min-width: 190px; }
+  .dl-name { font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: 900; color: #fff; margin-bottom: 6px; }
+  .dl-meta { font-size: .67rem; color: var(--muted); margin-bottom: 12px; letter-spacing: .08em; }
+  .dl-tags { display: flex; gap: 7px; flex-wrap: wrap; }
+  .tag {
+    background: rgba(255,45,120,.1); border: 1px solid rgba(255,45,120,.28);
+    color: var(--pink-light); font-size: .58rem;
+    letter-spacing: .1em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 2px;
+  }
+  .tag-green {
+    background: rgba(34,211,160,.1); border: 1px solid rgba(34,211,160,.35);
+    color: #22d3a0;
+  }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--pink); color: #fff;
+    font-family: 'Orbitron', monospace; font-size: .78rem;
+    font-weight: 700; letter-spacing: .1em;
+    padding: 14px 28px; border: none; border-radius: 2px;
+    cursor: pointer; text-decoration: none;
+    position: relative; overflow: hidden;
+    transition: transform .15s, box-shadow .15s;
+    box-shadow: 0 0 30px var(--pink-glow), inset 0 1px 0 rgba(255,255,255,.2);
+    white-space: nowrap;
+  }
+  .btn-primary::after {
+    content: ''; position: absolute; top: -50%; left: -60%;
+    width: 60%; height: 200%; background: rgba(255,255,255,.15);
+    transform: skewX(-20deg); transition: left .4s ease;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 55px var(--pink-glow), inset 0 1px 0 rgba(255,255,255,.2); }
+  .btn-primary:hover::after { left: 130%; }
+  .btn-primary:active { transform: scale(.97); }
+
+  .dl-note {
+    margin-top: 12px;
+    background: rgba(255,45,120,.05); border: 1px solid rgba(255,45,120,.2);
+    border-left: 3px solid var(--pink);
+    padding: 11px 16px; border-radius: 0 2px 2px 0;
+    font-size: .68rem; color: var(--muted); line-height: 1.7;
+  }
+  .dl-note strong { color: var(--pink-light); }
+
+  /* STATS */
+  .hero-stats {
+    margin-top: 44px; display: flex; gap: 44px;
+    justify-content: center; flex-wrap: wrap;
+    animation: fadeUp .7s .5s ease both;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Orbitron', monospace; font-size: 1.6rem;
+    font-weight: 900; color: var(--pink); text-shadow: 0 0 20px var(--pink-glow);
+  }
+  .stat-lbl { font-size: .6rem; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+  /* ── VIDEO SECTION ── */
+  .video-section {
+    position: relative; z-index: 10;
+    padding: 80px 0 100px;
+  }
+  .video-section-inner {
+    max-width: 860px; margin: 0 auto; padding: 0 24px;
+  }
+
+  /* divider line */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--pink), transparent);
+    opacity: .35; margin-bottom: 70px;
+  }
+
+  .section-label {
+    font-size: .65rem; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--pink); margin-bottom: 10px;
+  }
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.3rem, 4vw, 1.9rem);
+    font-weight: 900; color: #fff; margin-bottom: 10px;
+  }
+  .section-title span { color: var(--pink); }
+  .section-sub {
+    font-size: .78rem; color: var(--muted); line-height: 1.7;
+    max-width: 500px; margin-bottom: 32px;
+  }
+
+  /* Video box */
+  .video-box {
+    background: var(--black2);
+    border: 1px solid var(--pink);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 60px rgba(255,45,120,.15), 0 0 0 1px rgba(255,45,120,.05);
+  }
+  /* Pink top bar like a browser/app chrome */
+  .video-chrome {
+    background: var(--black3);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .chrome-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .chrome-dot:nth-child(1) { background: #ff5f57; }
+  .chrome-dot:nth-child(2) { background: #febc2e; }
+  .chrome-dot:nth-child(3) { background: #28c840; }
+  .chrome-title {
+    margin-left: 8px; font-size: .68rem; color: var(--muted);
+    letter-spacing: .1em; text-transform: uppercase;
+  }
+  .chrome-live {
+    margin-left: auto; display: flex; align-items: center; gap: 6px;
+    font-size: .6rem; color: var(--pink-light); letter-spacing: .1em;
+  }
+  .chrome-live span {
+    width: 6px; height: 6px; background: var(--pink); border-radius: 50%;
+    animation: blink 1s step-start infinite;
+  }
+
+  /* 16:9 ratio wrapper */
+  .video-ratio {
+    position: relative; width: 100%; padding-top: 56.25%;
+  }
+  .video-ratio iframe {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    border: none;
+  }
+
+  /* footer label under video */
+  .video-footer-bar {
+    background: var(--black3);
+    border-top: 1px solid var(--border);
+    padding: 12px 18px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 8px;
+  }
+  .video-footer-bar p {
+    font-size: .68rem; color: var(--muted); letter-spacing: .06em;
+  }
+  .video-footer-bar strong { color: var(--pink-light); }
+
+  /* PAGE FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 26px 24px; text-align: center; position: relative; z-index: 10;
+  }
+  footer p { font-size: .67rem; color: var(--muted); letter-spacing: .06em; }
+  footer a { color: var(--pink-light); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .65s ease, transform .65s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">AI/LAGSWITCH</a>
+    <a href="https://github.com/shelovesaoki" target="_blank" class="nav-gh">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+      shelovesaoki
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap" style="display:flex;flex-direction:column;align-items:center;">
+    <div class="hero-badge"><span></span> Free Download &nbsp;·&nbsp; Windows</div>
+    <h1 class="hero-title">AI<em>LAG</em>SWITCH</h1>
+    <p class="hero-sub">
+      The cleanest lag switch you'll find.<br/>
+      Built different. Download and run — no install needed.
+    </p>
+
+    <div class="dl-wrap">
+      <div class="dl-card">
+        <div class="dl-info">
+          <div class="dl-name">AILagSwitch.bat</div>
+          <div class="dl-meta">Latest &nbsp;·&nbsp; Windows 10 / 11 &nbsp;·&nbsp; Run as Admin</div>
+          <div class="dl-tags">
+            <span class="tag">Portable</span>
+            <span class="tag">No Install</span>
+            <span class="tag">Free</span>
+            <span class="tag tag-green">✓ Easy Install</span>
+          </div>
+        </div>
+        <a href="https://files.catbox.moe/9y20j4.bat" class="btn-primary" download>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download
+        </a>
+      </div>
+      <div class="dl-note">
+        <strong>⚠ Heads up:</strong> Windows Defender may flag .bat files. This is a false positive —
+        right-click and select <strong>Run as administrator</strong> to launch.
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">v1.0</div><div class="stat-lbl">Version</div></div>
+      <div class="stat"><div class="stat-num">WIN</div><div class="stat-lbl">Platform</div></div>
+      <div class="stat"><div class="stat-num">FREE</div><div class="stat-lbl">Always</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO SECTION -->
+<section class="video-section">
+  <div class="video-section-inner">
+    <div class="divider"></div>
+
+    <div class="reveal">
+      <p class="section-label">// proof</p>
+      <h2 class="section-title">With lag switching — <span>players can do this</span></h2>
+      <p class="section-sub">
+        See it in action. When the lag switch is active, you gain a massive advantage —
+        enemies freeze while you move freely.
+      </p>
+    </div>
+
+    <div class="video-box reveal">
+      <div class="video-chrome">
+        <div class="chrome-dot"></div>
+        <div class="chrome-dot"></div>
+        <div class="chrome-dot"></div>
+        <span class="chrome-title">AILagSwitch — Live Demo</span>
+        <span class="chrome-live"><span></span> LIVE</span>
+      </div>
+
+      <div class="video-ratio">
+        <iframe
+          src="https://www.youtube.com/embed/MlegIrVN-TY?rel=0&modestbranding=1&color=white"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+
+      <div class="video-footer-bar">
+        <p><strong>AILagSwitch v1.0</strong> &nbsp;·&nbsp; recorded on Windows 11</p>
+        <p style="color:var(--pink-light);">⚡ lag switch active during clip</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>
+    Made by <a href="https://github.com/shelovesaoki" target="_blank">shelovesaoki</a>
+    &nbsp;·&nbsp; Use responsibly &nbsp;·&nbsp; Not affiliated with any game or platform.
+  </p>
+</footer>
+
+<script>
+  // scroll reveal
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 100);
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(r => obs.observe(r));
+
+  // cursor trail
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:999;';
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  let W, H, mouse = {x:0,y:0}, trail = [];
+  function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+  document.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+  function drawTrail(){
+    ctx.clearRect(0,0,W,H);
+    trail.push({x:mouse.x, y:mouse.y, t:Date.now()});
+    trail = trail.filter(p => Date.now()-p.t < 500);
+    trail.forEach(p => {
+      const age = (Date.now()-p.t)/500;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, (1-age)*6, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(255,45,120,${(1-age)*.45})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(drawTrail);
+  }
+  drawTrail();
+</script>
+</body>
+</html>
